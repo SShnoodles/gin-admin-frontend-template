@@ -9,26 +9,28 @@ export interface Org {
   address: string;
   createdAt: string;
   updatedAt: string;
+  menuIds: Array<string>;
 }
 
 export const pageOrg = (params?: object) => {
-  return http.request<Result<Page<Org[]>>>(
-    "get",
-    `${VITE_PROXY_BASE_PATH}/orgs`,
-    {
-      params
-    }
-  );
-};
-
-export const getOrgs = (params?: object) => {
-  return http.request<Result<Org[]>>("get", `${VITE_PROXY_BASE_PATH}/orgs`, {
+  return http.request<Page<Org[]>>("get", `${VITE_PROXY_BASE_PATH}/orgs`, {
     params
   });
 };
 
+export const getOrgs = () => {
+  return http.request<Org[]>("get", `${VITE_PROXY_BASE_PATH}/orgs`);
+};
+
 export const getOrg = (id: string) => {
-  return http.request<Result<Org>>("get", `${VITE_PROXY_BASE_PATH}/orgs/${id}`);
+  return http.request<Org>("get", `${VITE_PROXY_BASE_PATH}/orgs/${id}`);
+};
+
+export const getOrgMenus = (id: string) => {
+  return http.request<string[]>(
+    "get",
+    `${VITE_PROXY_BASE_PATH}/orgs/${id}/menus`
+  );
 };
 
 export const addOrg = (data?: object) => {

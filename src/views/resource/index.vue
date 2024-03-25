@@ -4,6 +4,9 @@
       <el-form-item label="名称：">
         <el-input v-model="form.name" clearable />
       </el-form-item>
+      <el-form-item label="路径：">
+        <el-input v-model="form.path" clearable />
+      </el-form-item>
       <el-form-item>
         <el-button
           type="primary"
@@ -16,20 +19,13 @@
         <el-button :icon="useRenderIcon(Refresh)" @click="resetForm">
           重置
         </el-button>
-        <el-button
-          type="success"
-          :icon="useRenderIcon(Plus)"
-          @click="openAddOrEdit(null)"
-        >
-          新增
-        </el-button>
       </el-form-item>
     </el-form>
 
     <el-table :data="tableData" border stripe>
       <el-table-column prop="name" label="名称" />
-      <el-table-column prop="creditCode" label="信用代码" />
-      <el-table-column prop="address" label="地址" />
+      <el-table-column prop="method" label="方法" />
+      <el-table-column prop="path" label="路径" />
       <el-table-column prop="createdAt" label="创建时间" width="180">
         <template #default="{ row }">
           {{ dayFormat(row.createdAt) }}
@@ -38,26 +34,6 @@
       <el-table-column prop="updatedAt" label="更新时间" width="180">
         <template #default="{ row }">
           {{ dayFormat(row.updatedAt) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="200">
-        <template #default="{ row }">
-          <el-button
-            type="primary"
-            size="small"
-            :icon="useRenderIcon(EditPen)"
-            @click="openAddOrEdit(row)"
-          >
-            修改
-          </el-button>
-          <el-button
-            type="danger"
-            size="small"
-            :icon="useRenderIcon(Delete)"
-            @click="handleDelete(row)"
-          >
-            删除
-          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -78,15 +54,11 @@
 
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from "vue";
-import { Org, pageOrg, removeOrg } from "@/api/org";
+import { Resource, pageResource } from "@/api/resource";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import Dialog from "@/components/Org/Dialog.vue";
-import { FormInstance, ElMessageBox, ElMessage } from "element-plus";
-import Delete from "@iconify-icons/ep/delete";
-import EditPen from "@iconify-icons/ep/edit-pen";
+import { FormInstance, ElMessage } from "element-plus";
 import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
-import Plus from "@iconify-icons/ep/plus";
 import dayjs from "dayjs";
 
 defineOptions({
@@ -94,9 +66,10 @@ defineOptions({
 });
 const loading = ref(false);
 const total = ref(0);
-const tableData = ref<Org[]>([]);
+const tableData = ref<Resource[]>([]);
 const form = reactive({
   name: "",
+  path: "",
   pageIndex: 1,
   pageSize: 10
 });
@@ -113,8 +86,9 @@ const resetForm = () => {
 
 const onSearch = async () => {
   loading.value = true;
+
   try {
-    const data = await pageOrg(form);
+    const data = await pageResource(form);
     tableData.value = data.data;
     total.value = data.total;
   } catch (e) {
@@ -133,22 +107,6 @@ function handleSizeChange(val: number) {
   form.pageSize = val;
   onSearch();
 }
-
-const openAddOrEdit = (app: Org | undefined | null) => {
-  id.value = app?.id;
-  dialog.value.dialogVisible = true;
-};
-
-const handleDelete = async (app: Org) => {
-  ElMessageBox.confirm(`确定要删除 ${app.name}？`).then(async () => {
-    try {
-      await removeOrg(app.id);
-      await onSearch();
-    } catch (e) {
-      ElMessage.error(e.message);
-    }
-  });
-};
 
 const dayFormat = (time: string) => {
   return dayjs(time).format("YYYY-MM-DD HH:mm:ss");

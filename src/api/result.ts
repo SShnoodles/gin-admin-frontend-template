@@ -5,7 +5,6 @@ export type Result<T> = {
 };
 
 export type Page<T> = {
-  records: T;
-  count: number;
-  pages: number;
+  data: T;
+  total: number;
 };

@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form ref="formRef" :inline="true" :model="form">
-      <el-form-item label="应用名称：">
+      <el-form-item label="名称：">
         <el-input v-model="form.name" clearable />
       </el-form-item>
       <el-form-item>
@@ -27,11 +27,25 @@
     </el-form>
 
     <el-table :data="tableData" border stripe>
-      <el-table-column prop="name" label="名称" />
-      <el-table-column prop="creditCode" label="信用代码" />
-      <el-table-column prop="address" label="地址" />
-      <el-table-column prop="createdAt" label="创建时间" width="180" />
-      <el-table-column prop="updatedAt" label="更新时间" width="180" />
+      <el-table-column prop="username" label="登录名" />
+      <el-table-column prop="realName" label="用户名" />
+      <el-table-column prop="workNo" label="工号" />
+      <el-table-column prop="orgName" label="所属组织" />
+      <el-table-column prop="createdAt" label="创建时间" width="180">
+        <template #default="{ row }">
+          {{ dayFormat(row.createdAt) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="updatedAt" label="更新时间" width="180">
+        <template #default="{ row }">
+          {{ dayFormat(row.updatedAt) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="启用状态" width="100">
+        <template #default="{ row }">
+          <el-switch v-model="row.enabled" @change="handleEnabled(row)" />
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="{ row }">
           <el-button
@@ -70,9 +84,9 @@
 
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from "vue";
-import { Org, pageOrg, removeOrg } from "@/api/org";
+import { User, pageUser, removeUser, enabledUser } from "@/api/user";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import Dialog from "@/components/Org/Dialog.vue";
+import Dialog from "@/components/User/Dialog.vue";
 import { FormInstance, ElMessageBox, ElMessage } from "element-plus";
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
@@ -81,13 +95,14 @@ import Refresh from "@iconify-icons/ep/refresh";
 import Plus from "@iconify-icons/ep/plus";
 import { useRouter } from "vue-router";
 import Link from "@iconify-icons/ep/link";
+import dayjs from "dayjs";
 
 defineOptions({
   name: "App"
 });
 const loading = ref(false);
 const total = ref(0);
-const tableData = ref<Org[]>([]);
+const tableData = ref<User[]>([]);
 const form = reactive({
   name: "",
   pageIndex: 1,
@@ -109,9 +124,9 @@ const onSearch = async () => {
   loading.value = true;
 
   try {
-    const { data } = await pageOrg(form);
-    tableData.value = data.records;
-    total.value = data.count;
+    const data = await pageUser(form);
+    tableData.value = data.data;
+    total.value = data.total;
   } catch (e) {
     ElMessage.error(e.message);
   } finally {
@@ -129,20 +144,33 @@ function handleSizeChange(val: number) {
   onSearch();
 }
 
-const openAddOrEdit = (app: Org | undefined | null) => {
+const openAddOrEdit = (app: User | undefined | null) => {
   id.value = app?.id;
   dialog.value.dialogVisible = true;
 };
 
-const handleDelete = async (app: Org) => {
-  ElMessageBox.confirm(`确定要删除 ${app.name}？`).then(async () => {
+const handleDelete = async (app: User) => {
+  ElMessageBox.confirm(`确定要删除 ${app.username}？`).then(async () => {
     try {
-      await removeOrg(app.id);
+      await removeUser(app.id);
       await onSearch();
     } catch (e) {
       ElMessage.error(e.message);
     }
   });
+};
+
+const dayFormat = (time: string) => {
+  return dayjs(time).format("YYYY-MM-DD HH:mm:ss");
+};
+
+const handleEnabled = async (user: User) => {
+  try {
+    await enabledUser(user.id);
+    onSearch();
+  } catch (e) {
+    ElMessage.error(e.message);
+  }
 };
 
 onMounted(() => {

@@ -1,5 +1,6 @@
 import { http } from "@/utils/http";
 const { VITE_PROXY_BASE_PATH } = import.meta.env;
+import { Page } from "./result";
 
 export type UserResult = {
   success: boolean;
@@ -62,4 +63,52 @@ export const refreshTokenApi = (data?: object) => {
       data
     }
   );
+};
+
+export interface User {
+  id: string;
+  username: string;
+  realName: string;
+  workNo: string;
+  orgId: string;
+  createdAt: string;
+  updatedAt: string;
+  roleIds: Array<string>;
+}
+
+export const pageUser = (params?: object) => {
+  return http.request<Page<User[]>>("get", `${VITE_PROXY_BASE_PATH}/users`, {
+    params
+  });
+};
+
+export const getUsers = () => {
+  return http.request<User[]>("get", `${VITE_PROXY_BASE_PATH}/users`);
+};
+
+export const getUser = (id: string) => {
+  return http.request<User>("get", `${VITE_PROXY_BASE_PATH}/users/${id}`);
+};
+
+export const getUserRoleIds = (id: string) => {
+  return http.request<string[]>(
+    "get",
+    `${VITE_PROXY_BASE_PATH}/users/${id}/roles`
+  );
+};
+
+export const addUser = (data?: object) => {
+  return http.request("post", `${VITE_PROXY_BASE_PATH}/users`, { data });
+};
+
+export const editUser = (id: string, data?: object) => {
+  return http.request("put", `${VITE_PROXY_BASE_PATH}/users/${id}`, { data });
+};
+
+export const removeUser = (id: string) => {
+  return http.request("delete", `${VITE_PROXY_BASE_PATH}/users/${id}`);
+};
+
+export const enabledUser = (id: string) => {
+  return http.request("put", `${VITE_PROXY_BASE_PATH}/users/${id}/enabled`);
 };

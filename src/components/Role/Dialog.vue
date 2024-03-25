@@ -15,11 +15,18 @@
         <el-form-item label="名称" prop="name">
           <el-input v-model="state.form.name" />
         </el-form-item>
-        <el-form-item label="信用代码" prop="creditCode">
-          <el-input v-model="state.form.creditCode" />
+        <el-form-item label="编码" prop="code">
+          <el-input v-model="state.form.code" />
         </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="state.form.address" />
+        <el-form-item label="机构" prop="orgId">
+          <el-select v-model="state.form.orgId">
+            <el-option
+              v-for="item in orgs"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="菜单">
           <el-tree
@@ -44,7 +51,8 @@
 
 <script lang="ts" setup>
 import { reactive, ref, watch, nextTick, onMounted } from "vue";
-import { Org, getOrg, editOrg, addOrg, getOrgMenus } from "@/api/org";
+import { Role, getRole, editRole, addRole, getRoleMenus } from "@/api/role";
+import { getOrgs } from "@/api/org";
 import { getMenus } from "@/api/menu";
 import { FormInstance, FormRules, ElMessage, ElTree } from "element-plus";
 const props = defineProps({
@@ -54,11 +62,9 @@ const emits = defineEmits(["close"]);
 
 const formRef = ref<FormInstance>();
 const rules = reactive<FormRules>({
-  name: [{ required: true, message: "应用名称 必填", trigger: "blur" }],
-  creditCode: [
-    { required: true, message: "应用英文名称 必填", trigger: "blur" }
-  ],
-  address: [{ required: true, message: "仓库地址 必填", trigger: "blur" }]
+  name: [{ required: true, message: "名称 必填", trigger: "blur" }],
+  code: [{ required: true, message: "编码 必填", trigger: "blur" }],
+  orgId: [{ required: true, message: "机构 必填", trigger: "blur" }]
 });
 const tree = ref<InstanceType<typeof ElTree>>();
 const menus = ref();
@@ -72,11 +78,12 @@ const state = reactive({
   title: "",
   form: {
     name: "",
-    address: "",
-    creditCode: "",
+    code: "",
+    orgId: "",
     menuIds: []
-  } as Org
+  } as Role
 });
+const orgs = ref<Org[]>([]);
 
 watch(
   () => dialogVisible.value,
@@ -84,12 +91,12 @@ watch(
     if (v) {
       nextTick(() => {
         if (props.id) {
-          state.form = {} as Org;
+          state.form = {} as Role;
           state.title = "修改";
           handleGet(props.id);
         } else {
           state.title = "新增";
-          state.form = {} as Org;
+          state.form = {} as Role;
           tree.value.setCheckedKeys([]);
         }
       });
@@ -99,9 +106,17 @@ watch(
 
 const handleGet = async (id: string) => {
   try {
-    state.form = await getOrg(id);
-    const menuIds = await getOrgMenus(id);
+    state.form = await getRole(id);
+    const menuIds = await getRoleMenus(id);
     tree.value.setCheckedKeys(menuIds);
+  } catch (e) {
+    ElMessage.error(e.message);
+  }
+};
+
+const handleGetOrgs = async () => {
+  try {
+    orgs.value = await getOrgs();
   } catch (e) {
     ElMessage.error(e.message);
   }
@@ -114,9 +129,9 @@ const saveOrUpdate = async () => {
   state.form.menuIds = tree.value.getCheckedKeys();
   try {
     if (props.id) {
-      await editOrg(props.id, state.form);
+      await editRole(props.id, state.form);
     } else {
-      await addOrg(state.form);
+      await addRole(state.form);
     }
     emits("close");
     dialogVisible.value = false;
@@ -138,6 +153,7 @@ defineExpose({
 });
 
 onMounted(() => {
+  handleGetOrgs();
   handleMenus();
 });
 </script>

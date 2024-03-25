@@ -28,8 +28,8 @@
 
     <el-table :data="tableData" border stripe>
       <el-table-column prop="name" label="名称" />
-      <el-table-column prop="creditCode" label="信用代码" />
-      <el-table-column prop="address" label="地址" />
+      <el-table-column prop="code" label="编码" />
+      <el-table-column prop="orgName" label="所属机构" />
       <el-table-column prop="createdAt" label="创建时间" width="180">
         <template #default="{ row }">
           {{ dayFormat(row.createdAt) }}
@@ -78,9 +78,9 @@
 
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from "vue";
-import { Org, pageOrg, removeOrg } from "@/api/org";
+import { Role, pageRole, removeRole } from "@/api/role";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import Dialog from "@/components/Org/Dialog.vue";
+import Dialog from "@/components/Role/Dialog.vue";
 import { FormInstance, ElMessageBox, ElMessage } from "element-plus";
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
@@ -94,7 +94,7 @@ defineOptions({
 });
 const loading = ref(false);
 const total = ref(0);
-const tableData = ref<Org[]>([]);
+const tableData = ref<Role[]>([]);
 const form = reactive({
   name: "",
   pageIndex: 1,
@@ -114,7 +114,7 @@ const resetForm = () => {
 const onSearch = async () => {
   loading.value = true;
   try {
-    const data = await pageOrg(form);
+    const data = await pageRole(form);
     tableData.value = data.data;
     total.value = data.total;
   } catch (e) {
@@ -134,15 +134,15 @@ function handleSizeChange(val: number) {
   onSearch();
 }
 
-const openAddOrEdit = (app: Org | undefined | null) => {
+const openAddOrEdit = (app: Role | undefined | null) => {
   id.value = app?.id;
   dialog.value.dialogVisible = true;
 };
 
-const handleDelete = async (app: Org) => {
+const handleDelete = async (app: Role) => {
   ElMessageBox.confirm(`确定要删除 ${app.name}？`).then(async () => {
     try {
-      await removeOrg(app.id);
+      await removeRole(app.id);
       await onSearch();
     } catch (e) {
       ElMessage.error(e.message);
