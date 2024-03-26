@@ -5,7 +5,8 @@ export default {
   name: "role",
   component: () => import("@/views/role/index.vue"),
   meta: {
-    icon: "homeFilled",
-    title: "角色"
+    icon: "userFilled",
+    title: "角色",
+    rank: 3
   }
 } as RouteConfigsTable;

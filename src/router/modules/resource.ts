@@ -5,7 +5,8 @@ export default {
   name: "resource",
   component: () => import("@/views/resource/index.vue"),
   meta: {
-    icon: "homeFilled",
-    title: "资源"
+    icon: "list",
+    title: "资源",
+    rank: 5
   }
 } as RouteConfigsTable;

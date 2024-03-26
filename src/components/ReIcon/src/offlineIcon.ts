@@ -8,7 +8,17 @@ import { addIcon } from "@iconify/vue/dist/offline";
 import HomeFilled from "@iconify-icons/ep/home-filled";
 import InformationLine from "@iconify-icons/ri/information-line";
 import Lollipop from "@iconify-icons/ep/lollipop";
+import User from "@iconify-icons/ep/user";
+import OfficeBuilding from "@iconify-icons/ep/office-building";
+import Menu from "@iconify-icons/ep/menu";
+import List from "@iconify-icons/ep/list";
+import UserFilled from "@iconify-icons/ep/user-filled";
 
 addIcon("homeFilled", HomeFilled);
 addIcon("informationLine", InformationLine);
 addIcon("lollipop", Lollipop);
+addIcon("user", User);
+addIcon("officeBuilding", OfficeBuilding);
+addIcon("menu", Menu);
+addIcon("list", List);
+addIcon("userFilled", UserFilled);

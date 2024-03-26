@@ -5,7 +5,8 @@ export default {
   name: "menu",
   component: () => import("@/views/menu/index.vue"),
   meta: {
-    icon: "homeFilled",
-    title: "菜单"
+    icon: "menu",
+    title: "菜单",
+    rank: 4
   }
 } as RouteConfigsTable;
