@@ -107,12 +107,17 @@ export function useNav() {
     return remainingPaths.includes(path);
   }
 
+  function changePassword() {
+    router.push("change-password");
+  }
+
   return {
     route,
     title,
     device,
     layout,
     logout,
+    changePassword,
     routers,
     $storage,
     backTopMenu,

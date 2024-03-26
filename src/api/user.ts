@@ -112,3 +112,9 @@ export const removeUser = (id: string) => {
 export const enabledUser = (id: string) => {
   return http.request("put", `${VITE_PROXY_BASE_PATH}/users/${id}/enabled`);
 };
+
+export const changePassword = (data?: object) => {
+  return http.request("put", `${VITE_PROXY_BASE_PATH}/users/change-password`, {
+    data
+  });
+};

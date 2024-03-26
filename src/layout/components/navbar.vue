@@ -7,12 +7,14 @@ import Breadcrumb from "./sidebar/breadCrumb.vue";
 import topCollapse from "./sidebar/topCollapse.vue";
 import LogoutCircleRLine from "@iconify-icons/ri/logout-circle-r-line";
 import Setting from "@iconify-icons/ri/settings-3-line";
+import EditLine from "@iconify-icons/ri/edit-line";
 
 const {
   layout,
   device,
   logout,
   onPanel,
+  changePassword,
   pureApp,
   username,
   userAvatar,
@@ -58,6 +60,10 @@ const {
                 style="margin: 5px"
               />
               退出系统
+            </el-dropdown-item>
+            <el-dropdown-item @click="changePassword">
+              <IconifyIconOffline :icon="EditLine" style="margin: 5px" />
+              修改密码
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
